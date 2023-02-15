@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorApp1.Server.Controllers;
 [ApiController]
-[Route("[controller]")]
+[Route("myroot/myblazorapp/[controller]")]
 public class WeatherForecastController : ControllerBase
 {
     private static readonly string[] Summaries = new[]

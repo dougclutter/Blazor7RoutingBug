@@ -28,14 +28,32 @@ app.UseHttpsRedirection();
 //app.UseBlazorFrameworkFiles("/myblazorapp");
 
 // This doesn't work either
-app.UseBlazorFrameworkFiles("/myroot/myblazorapp");
+//app.UseBlazorFrameworkFiles("/myroot/myblazorapp");
+//app.UseStaticFiles();
+
+// And finally, the approach from 
+// https://learn.microsoft.com/en-us/aspnet/core/blazor/host-and-deploy/multiple-hosted-webassembly?view=aspnetcore-7.0
+// doesn't work either.
+app.MapWhen(ctx => ctx.Request.Path.StartsWithSegments("/myroot/myblazorapp"), first =>
+    {
+        first.UseBlazorFrameworkFiles("/myroot/myblazorapp");
+        first.UseStaticFiles();
+        first.UseStaticFiles("/myroot/myblazorapp");
+        first.UseRouting();
+
+        first.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+            endpoints.MapFallbackToFile("/myroot/myblazorapp/{*path:nonfile}",
+                "myroot/myblazorapp/index.html");
+        });
+    });
+
 app.UseStaticFiles();
 
 app.UseRouting();
 
-
 app.MapRazorPages();
 app.MapControllers();
-app.MapFallbackToFile("index.html");
 
 app.Run();
